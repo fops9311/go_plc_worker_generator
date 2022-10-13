@@ -1,0 +1,15 @@
+package cachedinterface
+//CI stands for cached interface\n
+//This is a way to input or output {{.TypeName}} data into PLC
+type CI{{.TypeName}} struct {
+	Value {{.TypeName}}
+	C     chan {{.TypeName}}
+}
+//Use this method in every tick of plc logic to input data into PLC
+func (c *CI{{.TypeName}}) ReadChan() {
+	c.Value = <-c.C
+}
+//Use this method in every tick of plc logic to output data into PLC
+func (c *CI{{.TypeName}}) WriteChan() {
+	c.C <- c.Value
+}
