@@ -1,11 +1,11 @@
 package plc
 
 import (
-	"fmt"
 	"log"
 	"time"
 
 	cif "github.com/fops9311/go_plc_worker_generator/cachedinterface"
+	driver "github.com/fops9311/go_plc_worker_generator/drivers/{{.ComDriver}}"
 )
 
 type {{.TypeName | ToUpper}} struct {
@@ -14,50 +14,58 @@ type {{.TypeName | ToUpper}} struct {
 	{{range $val := .Outputs}}{{$val.Name}} cif.CI{{$val.Type}};
 	{{end}}
 	StateStartTime time.Time
+	tickInterval100ms int
 }
 
-func NewPLC_{{.TypeName | ToUpper}}() *{{.TypeName | ToUpper}} {
+func NewPLC_{{.TypeName | ToUpper}}(tickInterval100ms int) *{{.TypeName | ToUpper}} {
 	return &{{.TypeName  | ToUpper}}{
 		{{range $val := .Inputs}}{{$val.Name}}: cif.CI{{$val.Type}}{
 			Value: {{$val.Value}},
-			Get: func(){{$val.Type}}{return {{$val.Value}}},
+			Get: driver.LinkInput{{$val.Type}}("{{$val.ComDriverLinkId}}",{{$val.Value}}),//func(){{$val.Type}}{return {{$val.Value}}},
 			},
 		{{end}}
 		{{range $val := .Outputs}}{{$val.Name}}:  cif.CI{{$val.Type}}{
 			Value: {{$val.Value}},
-			Set: func(v {{$val.Type}}){log.Print("Set {{$val.Name}} = ");fmt.Println(v)},
+			Set: driver.LinkOutput{{$val.Type}}("{{$val.ComDriverLinkId}}"),//func(v {{$val.Type}}){log.Print("Set {{$val.Name}} = ");fmt.Println(v)},
 			},
 		{{end}}
 		StateStartTime: time.Now(),
+		tickInterval100ms:tickInterval100ms,
 	}
 }
-func (plc *{{.TypeName | ToUpper}}) ReadInputs() {
+func (plc *{{.TypeName | ToUpper}}) readInputs() {
 	{{range $val := .Inputs}}plc.{{$val.Name}}.ReadChan()
 	{{end}}
 }
-func (plc *{{.TypeName | ToUpper}}) WriteOutputs() {
+func (plc *{{.TypeName | ToUpper}}) writeOutputs() {
 	{{range $val := .Outputs}}plc.{{$val.Name}}.WriteChan()
 	{{end}}
 }
-func (plc *{{.TypeName | ToUpper}}) Tick() {
-	plc.ReadInputs()
-	plc.Logic()
-	plc.WriteOutputs()
+func (plc *{{.TypeName | ToUpper}}) tick() {
+	plc.readInputs()
+	plc.logic()
+	plc.writeOutputs()
 }
-func (plc *{{.TypeName | ToUpper}}) Logic() {
+func (plc *{{.TypeName | ToUpper}}) logic() {
 	switch plc.State.Value {
 	{{range $state := .States}}
-	case {{$state.Id}}:
+	case {{$state.Id}}: // {{$state.Comment}}
 		{{range $outs := $state.OutputVector}}plc.{{$outs.Name}}.Value = {{$outs.Value}}
 		{{end}}
-		{{range $statechanges := $state.StateChangeCondition}}if ({{$statechanges.Condition}}){ plc.State.Value = {{$statechanges.Destination}}; plc.ResetStateTimer()} 
+		{{range $statechanges := $state.StateChangeCondition}}if ({{$statechanges.Condition}}){ plc.State.Value = {{$statechanges.Destination}}; plc.resetStateTimer()} 
 		{{end}}
 	{{end}}
 	default:
 		plc.State.Value = {{.DefaultStateId}}
 	}
 }
-func (plc *{{.TypeName | ToUpper}}) ResetStateTimer() {
-	log.Printf("%s passed", time.Now().Sub(plc.StateStartTime))
+func (plc *{{.TypeName | ToUpper}}) resetStateTimer() {
+	log.Printf("%s passed. state changed to %d", time.Now().Sub(plc.StateStartTime),plc.State.Value)
 	plc.StateStartTime = time.Now()
+}
+func (plc *TEST_UNIT0) Start() {
+	for {
+		plc.tick()
+		<-time.NewTimer(time.Millisecond * time.Duration(plc.tickInterval100ms*100)).C
+	}
 }

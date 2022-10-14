@@ -1,4 +1,4 @@
-package mqttpubsub
+package mqttdriver
 
 import (
 	"fmt"
