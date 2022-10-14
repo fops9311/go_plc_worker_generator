@@ -1,0 +1,94 @@
+{
+	"typename": "test_unit0",
+	"inputs": [
+		{
+			"name": "In",
+			"type": "bool",
+			"value": "false",
+			"com_driver_link_id": "metric/plc1/plc/in/pv"
+		}
+	],
+	"outputs": [
+		{
+			"name": "Out",
+			"type": "bool",
+			"value": "false",
+			"com_driver_link_id": "metric/plc1/plc/out/pv"
+		},
+		{
+			"name": "State",
+			"type": "int",
+			"value": "0",
+			"com_driver_link_id": "metric/plc1/plc/state/pv"
+		}
+	],
+	"states": [
+		{
+			"id": 0,
+			"comment": "Out off, wait for In == true",
+			"output_vector": [
+				{
+					"name": "Out",
+					"value": "false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 1,
+					"condition": "plc.In.Value"
+				}
+			]
+		},
+		{
+			"id": 1,
+			"comment": "Out on, wait for In == false",
+			"output_vector": [
+				{
+					"name": "Out",
+					"value": "true"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 2,
+					"condition": "!plc.In.Value"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"comment": "Out on, wait for In == true",
+			"output_vector": [
+				{
+					"name": "Out",
+					"value": "true"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 3,
+					"condition": "plc.In.Value"
+				}
+			]
+		},
+		{
+			"id": 3,
+			"comment": "Out off, wait for In == false",
+			"output_vector": [
+				{
+					"name": "Out",
+					"value": "false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 0,
+					"condition": "!plc.In.Value"
+				}
+			]
+		}
+	],
+	"start_state_id": 0,
+	"default_state_id": 0,
+	"com_driver": ""
+}

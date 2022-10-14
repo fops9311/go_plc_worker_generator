@@ -1,0 +1,63 @@
+package plc
+
+import (
+	"fmt"
+	"log"
+	"time"
+
+	cif "github.com/fops9311/go_plc_worker_generator/cachedinterface"
+)
+
+type {{.TypeName | ToUpper}} struct {
+	{{range $val := .Inputs}}{{$val.Name}} cif.CI{{$val.Type}};
+	{{end}}
+	{{range $val := .Outputs}}{{$val.Name}} cif.CI{{$val.Type}};
+	{{end}}
+	StateStartTime time.Time
+}
+
+func NewPLC_{{.TypeName | ToUpper}}() *{{.TypeName | ToUpper}} {
+	return &{{.TypeName  | ToUpper}}{
+		{{range $val := .Inputs}}{{$val.Name}}: cif.CI{{$val.Type}}{
+			Value: {{$val.Value}},
+			Get: func(){{$val.Type}}{return {{$val.Value}}},
+			},
+		{{end}}
+		{{range $val := .Outputs}}{{$val.Name}}:  cif.CI{{$val.Type}}{
+			Value: {{$val.Value}},
+			Set: func(v {{$val.Type}}){log.Print("Set {{$val.Name}} = ");fmt.Println(v)},
+			},
+		{{end}}
+		StateStartTime: time.Now(),
+	}
+}
+func (plc *{{.TypeName | ToUpper}}) ReadInputs() {
+	{{range $val := .Inputs}}plc.{{$val.Name}}.ReadChan()
+	{{end}}
+}
+func (plc *{{.TypeName | ToUpper}}) WriteOutputs() {
+	{{range $val := .Outputs}}plc.{{$val.Name}}.WriteChan()
+	{{end}}
+}
+func (plc *{{.TypeName | ToUpper}}) Tick() {
+	plc.ReadInputs()
+	plc.Logic()
+	plc.WriteOutputs()
+}
+func (plc *{{.TypeName | ToUpper}}) Logic() {
+	switch plc.State.Value {
+	{{range $state := .States}}
+	case {{$state.Id}}:
+		{{range $outs := $state.OutputVector}}plc.{{$outs.Name}}.Value = {{$outs.Value}}
+		{{end}}
+		{{range $statechanges := $state.StateChangeCondition}}if ({{$statechanges.Condition}}){ plc.State.Value = {{$statechanges.Destination}}; plc.ResetStateTimer()} 
+		{{end}}
+	{{end}}
+	default:
+		plc.State.Value = {{.DefaultStateId}}
+	}
+}
+func (plc *{{.TypeName | ToUpper}}) ResetStateTimer() {
+	log.Printf("%s passed", time.Now().Sub(plc.StateStartTime))
+	plc.StateStartTime = time.Now()
+}
