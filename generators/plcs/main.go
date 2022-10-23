@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/fops9311/go_plc_worker_generator/expression"
 )
 
 var IFTYPE string
@@ -29,6 +31,22 @@ func main() {
 		//unmarshaling json
 		plc := &TemplateData{}
 		err = json.Unmarshal(j, plc)
+		if err != nil {
+			log.Printf(" [error] %v\n", err)
+			return
+		}
+		//translate expressions
+		plc.Inputs, err = TranslateIO(plc.Inputs)
+		if err != nil {
+			log.Printf(" [error] %v\n", err)
+			return
+		}
+		plc.Outputs, err = TranslateIO(plc.Outputs)
+		if err != nil {
+			log.Printf(" [error] %v\n", err)
+			return
+		}
+		plc.States, err = TranslateStates(plc.States)
 		if err != nil {
 			log.Printf(" [error] %v\n", err)
 			return
@@ -73,6 +91,35 @@ func main() {
 		log.Printf("generated for %s\n", IFTYPE)
 	}()
 }
+func TranslateIO(s []PlcInterface) (res []PlcInterface, err error) {
+	for i := range s {
+		s[i].Value, err = expression.Translate(s[i].Expr)
+		if err != nil {
+			log.Printf(" [error] %s\n", s[i].Expr)
+			return s, err
+		}
+	}
+	return s, nil
+}
+func TranslateStates(s []PlcState) (res []PlcState, err error) {
+	for i := range s {
+		for j := range s[i].OutputVector {
+			s[i].OutputVector[j].Value, err = expression.Translate(s[i].OutputVector[j].Expr)
+			if err != nil {
+				log.Printf(" [error] %s\n", s[i].OutputVector[j].Expr)
+				return s, err
+			}
+		}
+		for k := range s[i].StateChangeCondition {
+			s[i].StateChangeCondition[k].Condition, err = expression.Translate(s[i].StateChangeCondition[k].Expr)
+			if err != nil {
+				log.Printf(" [error] %s\n", s[i].StateChangeCondition[k].Expr)
+				return s, err
+			}
+		}
+	}
+	return s, err
+}
 
 type TemplateData struct {
 	TypeName       string         `json:"typename"`
@@ -87,6 +134,7 @@ type PlcInterface struct {
 	Name            string `json:"name"`
 	Type            string `json:"type"`
 	Value           string `json:"value"`
+	Expr            string `json:"expr"`
 	ComDriverLinkId string `json:"com_driver_link_id"`
 }
 type PlcState struct {
@@ -98,8 +146,10 @@ type PlcState struct {
 type StateChange struct {
 	Destination int    `json:"destination"`
 	Condition   string `json:"condition"`
+	Expr        string `json:"expr"`
 }
 type OutputDescription struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
+	Expr  string `json:"expr"`
 }

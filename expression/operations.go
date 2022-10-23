@@ -3,6 +3,11 @@ package expression
 import "strings"
 
 var Operations = map[string]Operation{
+	"SET": NewOperation(1, 1,
+		func(args []string) string {
+			return "(" + strings.Join(args, "") + ")"
+		},
+	),
 	"ADD": NewOperation(2, 50,
 		func(args []string) string {
 			return "(" + strings.Join(args, "+") + ")"
@@ -23,11 +28,6 @@ var Operations = map[string]Operation{
 			return "(" + strings.Join(args, "*") + ")"
 		},
 	),
-	"SET": NewOperation(1, 1,
-		func(args []string) string {
-			return "(" + strings.Join(args, "") + ")"
-		},
-	),
 	"INTTOFLOAT": NewOperation(1, 1,
 		func(args []string) string {
 			return "INTTOFLOAT(" + strings.Join(args, "") + ")"
@@ -36,6 +36,11 @@ var Operations = map[string]Operation{
 	"FLOATTOINT": NewOperation(1, 1,
 		func(args []string) string {
 			return "FLOATTOINT(" + strings.Join(args, "") + ")"
+		},
+	),
+	"NOT": NewOperation(1, 1,
+		func(args []string) string {
+			return "!(" + strings.Join(args, "") + ")"
 		},
 	),
 	"GT": NewOperation(2, 2,

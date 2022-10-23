@@ -47,20 +47,20 @@ var OperationNotFound = errors.New("one of the operations not in operations")
 takes input string expression and translates it according to the operation defined in package
 */
 func Translate(input string) (output string, err error) {
-	//-- SPLIT
-	l, r, err := splitInput(input)
-	if err != nil {
-		return "", err
-	}
-	//-- TRANSLATE
-	r, err = translateExpr(r)
-	if err != nil {
-		return "", err
-	}
-	//-- JOIN
-	output = l + "=" + r
-
-	return output, nil
+	//-- SPLIT OPSOLITE
+	/*
+			l, r, err := splitInput(input)
+			if err != nil {
+				return "", err
+			}
+		//-- TRANSLATE
+		output, err = translateExpr(input)
+		if err != nil {
+			return "", err
+		}
+		//-- JOIN OPSOLITE
+			output = l + "=" + r*/
+	return translateExpr(input)
 }
 
 /*splits left and right parts of the input (variable and expression)*/

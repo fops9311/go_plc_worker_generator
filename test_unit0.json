@@ -5,6 +5,7 @@
 			"name": "In",
 			"type": "bool",
 			"value": "false",
+			"expr": "SET false",
 			"com_driver_link_id": "metric/test_plc/plc/in/b"
 		}
 	],
@@ -13,12 +14,14 @@
 			"name": "Out",
 			"type": "bool",
 			"value": "false",
+			"expr": "SET false",
 			"com_driver_link_id": "metric/test_plc/plc/out/b"
 		},
 		{
 			"name": "State",
 			"type": "int",
 			"value": "0",
+			"expr": "SET 0",
 			"com_driver_link_id": "metric/test_plc/plc/state/pv"
 		}
 	],
@@ -29,13 +32,15 @@
 			"output_vector": [
 				{
 					"name": "Out",
-					"value": "false"
+					"value": "false",
+					"expr": "SET false"
 				}
 			],
 			"state_change_condition": [
 				{
 					"destination": 1,
-					"condition": "plc.In.Value"
+					"condition": "plc.In.Value",
+					"expr": "SET plc.In.Value"
 				}
 			]
 		},
@@ -45,13 +50,15 @@
 			"output_vector": [
 				{
 					"name": "Out",
-					"value": "true"
+					"value": "true",
+					"expr": "SET true"
 				}
 			],
 			"state_change_condition": [
 				{
 					"destination": 2,
-					"condition": "!plc.In.Value"
+					"condition": "!plc.In.Value",
+					"expr": "NOT plc.In.Value"
 				}
 			]
 		},
@@ -61,13 +68,15 @@
 			"output_vector": [
 				{
 					"name": "Out",
-					"value": "true"
+					"value": "true",
+					"expr": "SET true"
 				}
 			],
 			"state_change_condition": [
 				{
 					"destination": 3,
-					"condition": "plc.In.Value"
+					"condition": "plc.In.Value",
+					"expr": "SET plc.In.Value"
 				}
 			]
 		},
@@ -77,13 +86,15 @@
 			"output_vector": [
 				{
 					"name": "Out",
-					"value": "false"
+					"value": "false",
+					"expr": "SET false"
 				}
 			],
 			"state_change_condition": [
 				{
 					"destination": 0,
-					"condition": "!plc.In.Value"
+					"condition": "!plc.In.Value",
+					"expr": "NOT plc.In.Value"
 				}
 			]
 		}
