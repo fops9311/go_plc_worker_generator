@@ -12,9 +12,23 @@ func TestTranslate(t *testing.T) {
 			},
 		},
 		{
-			in: "out=SUB 2",
+			in: "out=ADD 2",
 			result: TestTranslateResult{
-				out: "out=(-2)",
+				out: "",
+				err: ArgsValidationError,
+			},
+		},
+		{
+			in: "out=SET FOO|>ADD 2",
+			result: TestTranslateResult{
+				out: "out=((FOO)+2)",
+				err: nil,
+			},
+		},
+		{
+			in: "out=SUB FOO 2",
+			result: TestTranslateResult{
+				out: "out=(FOO-2)",
 				err: nil,
 			},
 		},
@@ -43,45 +57,38 @@ func TestTranslate(t *testing.T) {
 			in: "out=BULSHIT 1",
 			result: TestTranslateResult{
 				out: "",
-				err: ExpressionError,
+				err: OperationNotFound,
 			},
 		},
 		{
 			in: "BULSHIT",
 			result: TestTranslateResult{
 				out: "",
-				err: ExpressionError,
+				err: ExpressionDividerNotFound,
 			},
 		},
 		{
 			in: "BULSHIT=",
 			result: TestTranslateResult{
 				out: "",
-				err: ExpressionError,
-			},
-		},
-		{
-			in: "out=BULSHIT",
-			result: TestTranslateResult{
-				out: "",
-				err: ExpressionError,
+				err: OperationNotFound,
 			},
 		},
 		{
 			in: "out=ADD|>SUB 1",
 			result: TestTranslateResult{
-				out: "out=()",
-				err: nil,
+				out: "",
+				err: ArgsValidationError,
 			},
 		},
 	}
-	for _, tc := range tests {
+	for i, tc := range tests {
 		res, err := Translate(tc.in)
 		if err != tc.result.err || res != tc.result.out {
-			t.Errorf("[error] in=\"%s\", \"%s\"=\"%s\", err=%v", tc.in, tc.result.out, res, tc.result.err)
+			t.Errorf("[%d] [error] in=\"%s\", \"%s\"=\"%s\", %v=%v", i, tc.in, tc.result.out, res, err, tc.result.err)
 			continue
 		}
-		t.Logf("[success] in=\"%s\", our=\"%s\", err=%v", tc.in, tc.result.out, tc.result.err)
+		t.Logf("[%d] [success] in=\"%s\", our=\"%s\", err=%v", i, tc.in, tc.result.out, tc.result.err)
 	}
 
 }
