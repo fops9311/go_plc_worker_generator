@@ -6,7 +6,8 @@
 			"type": "bool",
 			"value": "false",
 			"expr": "SET false",
-			"com_driver_link_id": "metric/test_plc/plc/in/b"
+			"com_driver_link_id": "metric/test_plc/plc/in/b",
+			"com_driver": "mqtt"
 		}
 	],
 	"outputs": [
@@ -15,14 +16,16 @@
 			"type": "bool",
 			"value": "false",
 			"expr": "SET false",
-			"com_driver_link_id": "metric/test_plc/plc/out/b"
+			"com_driver_link_id": "metric/test_plc/plc/out/b",
+			"com_driver": "mqtt"
 		},
 		{
 			"name": "State",
 			"type": "int",
 			"value": "0",
 			"expr": "SET 0",
-			"com_driver_link_id": "metric/test_plc/plc/state/pv"
+			"com_driver_link_id": "metric/test_plc/plc/state/pv",
+			"com_driver": "internaldb"
 		}
 	],
 	"states": [
@@ -101,5 +104,5 @@
 	],
 	"start_state_id": 0,
 	"default_state_id": 0,
-	"com_driver": "mqtt"
+	"com_drivers": ["mqtt","internaldb"]
 }

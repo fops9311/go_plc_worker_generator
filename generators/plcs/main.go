@@ -128,7 +128,7 @@ type TemplateData struct {
 	States         []PlcState     `json:"states"`
 	StartStateId   int            `json:"start_state_id"`
 	DefaultStateId int            `json:"default_state_id"`
-	ComDriver      string         `json:"com_driver"`
+	ComDrivers     []string       `json:"com_drivers"`
 }
 type PlcInterface struct {
 	Name            string `json:"name"`
@@ -136,6 +136,7 @@ type PlcInterface struct {
 	Value           string `json:"value"`
 	Expr            string `json:"expr"`
 	ComDriverLinkId string `json:"com_driver_link_id"`
+	ComDriver       string `json:"com_driver"`
 }
 type PlcState struct {
 	Id                   int                 `json:"id"`

@@ -5,7 +5,8 @@ import (
 	"time"
 
 	cif "github.com/fops9311/go_plc_worker_generator/cachedinterface"
-	driver "github.com/fops9311/go_plc_worker_generator/drivers/{{.ComDriver}}"
+	{{range $val := .ComDrivers}}{{$val}} "github.com/fops9311/go_plc_worker_generator/drivers/{{$val}}"
+	{{end}}
 )
 
 type {{.TypeName | ToUpper}} struct {
@@ -21,12 +22,12 @@ func NewPLC_{{.TypeName | ToUpper}}(tickInterval100ms int) *{{.TypeName | ToUppe
 	return &{{.TypeName  | ToUpper}}{
 		{{range $val := .Inputs}}{{$val.Name}}: cif.CI{{$val.Type}}{
 			Value: {{$val.Value}},
-			Get: driver.LinkInput{{$val.Type}}("{{$val.ComDriverLinkId}}",{{$val.Value}}),//func(){{$val.Type}}{return {{$val.Value}}},
+			Get: {{$val.ComDriver}}.LinkInput{{$val.Type}}("{{$val.ComDriverLinkId}}",{{$val.Value}}),//func(){{$val.Type}}{return {{$val.Value}}},
 			},
 		{{end}}
 		{{range $val := .Outputs}}{{$val.Name}}:  cif.CI{{$val.Type}}{
 			Value: {{$val.Value}},
-			Set: driver.LinkOutput{{$val.Type}}("{{$val.ComDriverLinkId}}"),//func(v {{$val.Type}}){log.Print("Set {{$val.Name}} = ");fmt.Println(v)},
+			Set: {{$val.ComDriver}}.LinkOutput{{$val.Type}}("{{$val.ComDriverLinkId}}"),//func(v {{$val.Type}}){log.Print("Set {{$val.Name}} = ");fmt.Println(v)},
 			},
 		{{end}}
 		StateStartTime: time.Now(),

@@ -5,7 +5,9 @@ import (
 	"time"
 
 	cif "github.com/fops9311/go_plc_worker_generator/cachedinterface"
-	driver "github.com/fops9311/go_plc_worker_generator/drivers/mqtt"
+	mqtt "github.com/fops9311/go_plc_worker_generator/drivers/mqtt"
+	internaldb "github.com/fops9311/go_plc_worker_generator/drivers/internaldb"
+	
 )
 
 type TEST_UNIT0 struct {
@@ -22,16 +24,16 @@ func NewPLC_TEST_UNIT0(tickInterval100ms int) *TEST_UNIT0 {
 	return &TEST_UNIT0{
 		In: cif.CIbool{
 			Value: (false),
-			Get: driver.LinkInputbool("metric/test_plc/plc/in/b",(false)),//func()bool{return (false)},
+			Get: mqtt.LinkInputbool("metric/test_plc/plc/in/b",(false)),//func()bool{return (false)},
 			},
 		
 		Out:  cif.CIbool{
 			Value: (false),
-			Set: driver.LinkOutputbool("metric/test_plc/plc/out/b"),//func(v bool){log.Print("Set Out = ");fmt.Println(v)},
+			Set: mqtt.LinkOutputbool("metric/test_plc/plc/out/b"),//func(v bool){log.Print("Set Out = ");fmt.Println(v)},
 			},
 		State:  cif.CIint{
 			Value: (0),
-			Set: driver.LinkOutputint("metric/test_plc/plc/state/pv"),//func(v int){log.Print("Set State = ");fmt.Println(v)},
+			Set: internaldb.LinkOutputint("metric/test_plc/plc/state/pv"),//func(v int){log.Print("Set State = ");fmt.Println(v)},
 			},
 		
 		StateStartTime: time.Now(),
