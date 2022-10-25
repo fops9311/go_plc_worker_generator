@@ -4,5 +4,7 @@
 //go:generate go run ./generators/interfaces/main.go int
 //go:generate go run ./generators/interfaces/main.go string
 
-//go:generate go run ./generators/plcs/main.go test_unit0
+//go:generate go build -o decl ./declarations/
+//go:generate ./decl ./declarations/plcs.json ./declarations/types/ ./declarations/instances/ ./declarations/default.template ./plc/
+
 package main

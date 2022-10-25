@@ -1,0 +1,304 @@
+{
+	"typename": "on_off_valve",
+	"inputs": [
+		{
+			"name": "st_open",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/st_open/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "st_close",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/st_close/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "st_fail",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/st_fail/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "st_auto",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/st_auto/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "st_auto_openclose",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/st_auto_openclose/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "b_alarm_reset",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/b_alarm_reset/b",
+			"com_driver": "mqtt"
+		}
+	],
+	"outputs": [
+		{
+			"name": "cmd_open",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/cmd_open/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "cmd_close",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/cmd_close/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "cmd_stop",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/cmd_stop/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "cmd_fail",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/on_off_valve/k1/cmd_fail/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "State",
+			"type": "int",
+			"value": "0",
+			"expr": "SET 0",
+			"com_driver_link_id": "metric/on_off_valve/k1/state/pv",
+			"com_driver": "internaldb"
+		}
+	],
+	"states": [
+		{
+			"id": -1,
+			"comment": "valve failed",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET true"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 0,
+					"expr": "SET plc.st_fail.Value|>NOT|>AND plc.b_alarm_reset.Value"
+				}
+			]
+		},
+		{
+			"id": 0,
+			"comment": "valve off",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 1,
+					"expr": "SET plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
+		},
+		{
+			"id": 1,
+			"comment": "auto mode wait for command",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 3,
+					"expr": "NOT plc.st_auto_openclose.Value"
+				},
+				{
+					"destination": 2,
+					"expr": "SET plc.st_auto_openclose.Value"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"comment": "auto mode opening",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET true"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 3,
+					"expr": "SET plc.st_open.Value"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
+		},
+		{
+			"id": 3,
+			"comment": "auto mode opened",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 1,
+					"expr": "NOT plc.st_auto_openclose.Value"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
+		},
+		{
+			"id": 4,
+			"comment": "auto mode stoping",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET true"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 1,
+					"expr": "SET ((time.Now().Add(time.Duration(time.Second*-5))).After(plc.StateStartTime))"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
+		}
+	],
+	"start_state_id": 0,
+	"default_state_id": 0,
+	"com_drivers": ["mqtt","internaldb"]
+}
