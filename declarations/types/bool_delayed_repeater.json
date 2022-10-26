@@ -1,0 +1,108 @@
+{
+	"typename": "{{.Type}}_{{.Id}}",
+	"inputs": [
+		{
+			"name": "in",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/in/b",
+			"com_driver": "mqtt"
+		}
+	],
+	"outputs": [
+		{
+			"name": "out",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/out/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "State",
+			"type": "int",
+			"value": "0",
+			"expr": "SET 0",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/state/pv",
+			"com_driver": "mqtt"
+		}
+	],
+	"states": [
+		{
+			"id": 0,
+			"comment": "in off",
+			"output_vector": [
+				{
+					"name": "out",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 1,
+					"expr": "SET plc.in.Value"
+				}
+			]
+		},
+		{
+			"id": 1,
+			"comment": "out on delay",
+			"output_vector": [
+				{
+					"name": "out",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 2,
+					"expr": "SET ((time.Now().Add(time.Duration(time.Second*-5))).After(plc.StateStartTime))"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.in.Value"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"comment": "in on",
+			"output_vector": [
+				{
+					"name": "out",
+					"expr": "SET true"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 3,
+					"expr": "SET plc.in.Value"
+				}
+			]
+		},
+		{
+			"id": 3,
+			"comment": "out off delay",
+			"output_vector": [
+				{
+					"name": "out",
+					"expr": "SET true"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 0,
+					"expr": "SET ((time.Now().Add(time.Duration(time.Second*-5))).After(plc.StateStartTime))"
+				},
+				{
+					"destination": 2,
+					"expr": "NOT plc.in.Value"
+				}
+			]
+		}
+	],
+	"start_state_id": 0,
+	"default_state_id": 0,
+	"com_drivers": ["mqtt"]
+}

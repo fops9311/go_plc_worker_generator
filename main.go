@@ -13,7 +13,9 @@ func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
 
-	go plc.NewPLC_ON_OFF_VALVE_K1(3).Start()
+	for k := range plc.PLCS {
+		go plc.PLCS[k].Start()
+	}
 
 	select {
 	case sig := <-c:

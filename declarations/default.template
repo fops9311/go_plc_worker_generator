@@ -22,12 +22,12 @@ func NewPLC_{{.TypeName | ToUpper}}(tickInterval100ms int) *{{.TypeName | ToUppe
 	return &{{.TypeName  | ToUpper}}{
 		{{range $val := .Inputs}}{{$val.Name}}: cif.CI{{$val.Type}}{
 			Value: {{$val.Value}},
-			Get: {{$val.ComDriver}}.LinkInput{{$val.Type}}("{{$val.ComDriverLinkId}}",{{$val.Value}}),//func(){{$val.Type}}{return {{$val.Value}}},
+			Get: {{$val.ComDriver}}.LinkInput{{$val.Type}}("{{$val.ComDriverLinkId}}",{{$val.Value}}),
 			},
 		{{end}}
 		{{range $val := .Outputs}}{{$val.Name}}:  cif.CI{{$val.Type}}{
 			Value: {{$val.Value}},
-			Set: {{$val.ComDriver}}.LinkOutput{{$val.Type}}("{{$val.ComDriverLinkId}}"),//func(v {{$val.Type}}){log.Print("Set {{$val.Name}} = ");fmt.Println(v)},
+			Set: {{$val.ComDriver}}.LinkOutput{{$val.Type}}("{{$val.ComDriverLinkId}}"),
 			},
 		{{end}}
 		StateStartTime: time.Now(),
@@ -61,10 +61,11 @@ func (plc *{{.TypeName | ToUpper}}) logic() {
 	}
 }
 func (plc *{{.TypeName | ToUpper}}) resetStateTimer() {
-	log.Printf("%s passed. state changed to %d", time.Now().Sub(plc.StateStartTime),plc.State.Value)
+	log.Printf("[{{.TypeName | ToUpper}}] %s passed. state changed to %d", time.Now().Sub(plc.StateStartTime),plc.State.Value)
 	plc.StateStartTime = time.Now()
 }
 func (plc *{{.TypeName | ToUpper}}) Start() {
+	log.Printf("[info] plc [ID-{{.TypeName | ToUpper}}] started!")
 	for {
 		plc.tick()
 		<-time.NewTimer(time.Millisecond * time.Duration(plc.tickInterval100ms*100)).C

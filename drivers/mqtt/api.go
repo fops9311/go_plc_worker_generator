@@ -15,6 +15,8 @@ func LinkInputbool(id string, def bool) func() bool {
 
 	}
 	return func() bool {
+		inputM.Lock()
+		defer inputM.Unlock()
 		b, err := strconv.ParseBool(inputBuffer[id])
 		if err != nil {
 			log.Printf("[error] %v\n", err)
@@ -41,6 +43,8 @@ func LinkInputint(id string, def int) func() int {
 
 	}
 	return func() int {
+		inputM.Lock()
+		defer inputM.Unlock()
 		b, err := strconv.ParseInt(inputBuffer[id], 10, 64)
 		if err != nil {
 			log.Printf("[error] %v\n", err)
@@ -67,6 +71,8 @@ func LinkInputfloat64(id string, def float64) func() float64 {
 
 	}
 	return func() float64 {
+		inputM.Lock()
+		defer inputM.Unlock()
 		b, err := strconv.ParseFloat(inputBuffer[id], 64)
 		if err != nil {
 			log.Printf("[error] %v\n", err)

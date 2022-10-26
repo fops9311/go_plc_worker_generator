@@ -4,8 +4,9 @@
 *.dll
 *.so
 *.dylib
-./declarations/instances/*
-./plc/*
+declarations/instances/*
+plc/*
+decl
 # Test binary, built with `go test -c`
 *.test
 

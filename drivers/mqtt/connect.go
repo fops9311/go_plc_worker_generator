@@ -13,7 +13,7 @@ var SubscribeSubdir string = "metric/#"
 var Subsribe = make(chan Message)
 
 var (
-	BrokerHost = "192.168.1.29"
+	BrokerHost = "192.168.1.37"
 	BrokerPort = 1883
 	ClientId   = "my-plc-server-pubsub"
 	UserName   = "user1"

@@ -2,43 +2,63 @@
     "plcs":[
         {
             "id":"k1",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":2
         },
         {
             "id":"k2",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k3",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k4",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k5",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k6",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k7",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k8",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k9",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
         },
         {
             "id":"k10",
-            "type":"on_off_valve"
+            "type":"on_off_valve",
+            "tick_interval_100ms":10
+        },
+        {
+            "id":"d1",
+            "type":"bool_delayed_repeater",
+            "tick_interval_100ms":2
+        },
+        {
+            "id":"n1",
+            "type":"bool_negate",
+            "tick_interval_100ms":2
         }
     ]
 }

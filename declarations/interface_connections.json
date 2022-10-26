@@ -1,0 +1,29 @@
+{
+    "bool_delayed_repeater_d1": [
+        {
+            "from": "metric/bool_negate/n1/in/b",
+            "to": "metric/bool_delayed_repeater/d1/out/b"
+        },
+        {
+            "from": "metric/bool_delayed_repeater/d1/in/b",
+            "to": "metric/bool_negate/n1/out/b"
+        }
+    ],
+    "on_off_valve_k1": [
+        {
+            "from": "metric/on_off_valve/k1/st_auto/b",
+            "to": "metric/bool_delayed_repeater/d1/out/b"
+        },
+        {
+            "from": "metric/bool_negate/n1/out1/b",
+            "to": "metric/on_off_valve/k1/st_auto_openclose/b"
+        }
+    ],
+    "bool_negate_n1": [
+        {
+            "from": "metric/on_off_valve/k1/st_auto/b",
+            "to": "metric/on_off_valve/k1/cmd_close/b"
+        }
+    ]
+
+}

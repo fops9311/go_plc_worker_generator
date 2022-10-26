@@ -89,7 +89,7 @@
 			"value": "0",
 			"expr": "SET 0",
 			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/state/pv",
-			"com_driver": "internaldb"
+			"com_driver": "mqtt"
 		}
 	],
 	"states": [
@@ -172,7 +172,7 @@
 			],
 			"state_change_condition": [
 				{
-					"destination": 3,
+					"destination": 5,
 					"expr": "NOT plc.st_auto_openclose.Value"
 				},
 				{
@@ -212,6 +212,10 @@
 			],
 			"state_change_condition": [
 				{
+					"destination": 4,
+					"expr": "NOT plc.st_auto_openclose.Value"
+				},
+				{
 					"destination": 3,
 					"expr": "SET plc.st_open.Value"
 				},
@@ -247,6 +251,10 @@
 				}
 			],
 			"state_change_condition": [
+				{
+					"destination": -1,
+					"expr": "NOT plc.st_open.Value"
+				},
 				{
 					"destination": 1,
 					"expr": "NOT plc.st_auto_openclose.Value"
@@ -296,9 +304,89 @@
 					"expr": "SET plc.st_fail.Value"
 				}
 			]
+		},
+		{
+			"id": 5,
+			"comment": "auto mode closeing",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET true"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": 6,
+					"expr": "SET plc.st_close.Value"
+				},
+				{
+					"destination": 4,
+					"expr": "SET plc.st_auto_openclose.Value"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
+		},
+		{
+			"id": 6,
+			"comment": "auto mode closed",
+			"output_vector": [
+				{
+					"name": "cmd_open",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_close",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_stop",
+					"expr": "SET false"
+				},
+				{
+					"name": "cmd_fail",
+					"expr": "SET false"
+				}
+			],
+			"state_change_condition": [
+				{
+					"destination": -1,
+					"expr": "NOT plc.st_close.Value"
+				},
+				{
+					"destination": 1,
+					"expr": "SET plc.st_auto_openclose.Value"
+				},
+				{
+					"destination": 0,
+					"expr": "NOT plc.st_auto.Value"
+				},
+				{
+					"destination": -1,
+					"expr": "SET plc.st_fail.Value"
+				}
+			]
 		}
 	],
 	"start_state_id": 0,
 	"default_state_id": 0,
-	"com_drivers": ["mqtt","internaldb"]
+	"com_drivers": ["mqtt"]
 }

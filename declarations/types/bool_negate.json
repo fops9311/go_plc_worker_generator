@@ -1,0 +1,68 @@
+{
+	"typename": "{{.Type}}_{{.Id}}",
+	"inputs": [
+		{
+			"name": "in",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/in/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "in1",
+			"type": "bool",
+			"value": "false",
+			"expr": "SET false",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/in1/b",
+			"com_driver": "mqtt"
+		}
+	],
+	"outputs": [
+		{
+			"name": "out",
+			"type": "bool",
+			"value": "true",
+			"expr": "SET true",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/out/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "out1",
+			"type": "bool",
+			"value": "true",
+			"expr": "SET true",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/out1/b",
+			"com_driver": "mqtt"
+		},
+		{
+			"name": "State",
+			"type": "int",
+			"value": "0",
+			"expr": "SET 0",
+			"com_driver_link_id": "metric/{{.Type}}/{{.Id}}/state/pv",
+			"com_driver": "mqtt"
+		}
+	],
+	"states": [
+		{
+			"id": 0,
+			"comment": "Negate",
+			"output_vector": [
+				{
+					"name": "out",
+					"expr": "NOT plc.in.Value"
+				},
+				{
+					"name": "out1",
+					"expr": "NOT plc.in1.Value"
+				}
+			],
+			"state_change_condition": [
+			]
+		}
+	],
+	"start_state_id": 0,
+	"default_state_id": 0,
+	"com_drivers": ["mqtt"]
+}

@@ -11,20 +11,38 @@ import (
 	"github.com/fops9311/go_plc_worker_generator/expression"
 )
 
-func DeclarationToCode(declFile string, resultFile string) error {
-
-	var plcTemplate = os.Args[4]
+func UnmarshalJsonFile(fileName string, data interface{}) error {
 	//reading the file
-	j, err := os.ReadFile(declFile)
+	j, err := os.ReadFile(fileName)
 	if err != nil {
 		return err
 	}
 	//unmarshaling json
-	plc := &TemplateData{}
-	err = json.Unmarshal(j, plc)
+	err = json.Unmarshal(j, data)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+func DeclarationToCode(declFile string, resultFile string) error {
+
+	var plcTemplate = os.Args[4]
+	//unmarshaling plc json
+	plc := &TemplateData{}
+	err := UnmarshalJsonFile(declFile, plc)
+	if err != nil {
+		return err
+	}
+
+	//unmarshaling interface redirect file json
+	ifc := &InterfaceConnections{}
+	err = UnmarshalJsonFile("./declarations/interface_connections.json", ifc)
+	if err != nil {
+		return err
+	}
+
+	//update links
+	ifc.UpdateLinks(plc)
 	//translate expressions
 	plc.Inputs, err = TranslateIO(plc.Inputs)
 	if err != nil {

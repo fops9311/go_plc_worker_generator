@@ -15,6 +15,8 @@ var inputM sync.Mutex
 var init_flag bool = false
 
 func init() {
+	inputM.Lock()
+	defer inputM.Unlock()
 	if !init_flag {
 		go Init()
 		init_flag = true
